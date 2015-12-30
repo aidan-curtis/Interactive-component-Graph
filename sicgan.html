@@ -1,0 +1,172 @@
+<html>
+    
+    <head>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+    </head>
+    <body>
+        <script>
+            function returnCentroid(node, data) {
+                var exists = 0;
+                
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].Type === node.Type) {
+                        if (node.Cost != "?" && node.Power != "?") {
+                            data[i].averageX = (data[i].averageX * data[i].Number + parseFloat(node.Power)) / (data[i].Number + 1)
+                            data[i].averageY = (data[i].averageY * data[i].Number + parseFloat(node.Cost)) / (data[i].Number + 1)
+                            data[i].Number++;
+                            exists = 1;
+                            break;
+                        }
+                        
+                    }
+                    
+                }
+                
+                if (exists == 0) data.push({
+                                           'Manufacturer': node.Manufacturer,
+                                           'Number': 1,
+                                           'averageX': node.Power,
+                                           'averageY': node.Cost
+                                           })
+                                           
+                                           return data;
+            }
+        var height = 1500;
+        var width = 1500;
+        d3.csv("merged2.csv", function(data) {
+               var color = d3.scale.category20();
+               
+               var scalePower = d3.scale.log()
+               .range([0, width])
+               .domain([0.01, 3000]);
+               
+               var scaleCost = d3.scale.log()
+               .range([height, 0])
+               .domain([0.01, 1000]);
+               var formatter = d3.format("0.2r");
+               var xAxis = d3.svg.axis()
+               .scale(scalePower)
+               .orient("bottom")
+               .tickSize(1, 1)
+               .tickFormat(function(d) {
+                           return formatter(d) + "Wats"
+                           })
+               .tickValues([.02, .2, 2, 20, 200, 2000])
+               var formatter2 = d3.format("0.2r");
+               var yAxis = d3.svg.axis()
+               .scale(scaleCost)
+               .orient("left")
+               .tickSize(1, 1)
+               .tickFormat(function(d) {
+                           return "$" + formatter2(d) + "/Unit"
+                           })
+               
+               
+               var canvas = d3.select("body")
+               .append("svg")
+               .attr("width", width + 200)
+               .attr("height", height + 200)
+               .append("g")
+               .attr("transform", "translate(100, 100)")
+               
+               canvas.on("mouseup", mouseup);
+               canvas.append("g").attr("class", "x axis").call(xAxis).attr("transform", "translate(0," + height + ")");
+               canvas.append("g").attr("class", "y axis").call(yAxis);
+               
+               
+               var text1 = canvas.append("text").text("Cost").attr("x", -height / 2).attr("y", "-70").attr("style", "font-size:30px").attr('transform', 'rotate(-90)')
+               
+               var text1 = canvas.append("text").text("Companies and Their Single FET products").attr("x", height / 2).attr("y", "-70").attr("style", "font-size:30px")
+               
+               var text2 = canvas.append("text").text("Power").attr("x", width / 2).attr("y", height + 50).attr("style", "font-size:30px")
+               
+               var nodes = canvas.selectAll(".node")
+               .data(data).enter()
+               .append("g")
+               .filter(function(d) {
+                       return d.Cost != "?" && d.Power != "?"
+                       })
+               .attr("class", "node")
+               
+               var circles = nodes.append("circle")
+               .attr("cx", function(d) {
+                     return scalePower(d.Power)
+                     })
+               .attr("cy", function(d) {
+                     return scaleCost(d.Cost)
+                     })
+               .attr("r", "3")
+               .attr("fill", function(d) {
+                     return color(d.Type)
+                     })
+               .on("mousedown", function(d) {
+                   mousedown(d.Type)
+                   })
+               
+               nodes.append("title").text(function(d) {
+                                          return d.Type
+                                          });
+               
+               var largeNodeData = []
+               for (var i = 0; i < data.length; i++) {
+               if (data[i].Cost != "?" && data[i].Power != "?") {
+               largeNodeData = returnCentroid(data[i], largeNodeData);
+               }
+               }
+               console.log(largeNodeData);
+               var largeNode = canvas.selectAll(".largeNode")
+               .data(largeNodeData)
+               .enter()
+               .append("g")
+               .attr("class", "largeNode")
+               
+               var largeNodeCircle = largeNode.append("circle")
+               .attr("cx", function(d) {
+                     return scalePower(d.averageX)
+                     })
+               .attr("cy", function(d) {
+                     return scaleCost(d.averageY)
+                     })
+               .attr("r", function(d) {
+                     return Math.sqrt(parseInt(d.Number))
+                     })
+               .attr("fill", function(d) {
+                     return color(d.Manufacturer)
+                     })
+               .on("mousedown", function(d) {
+                   mousedown(d.Manufacturer)
+                   })
+               largeNode.append("title").text(function(d) {
+                                              return d.Manufacturer
+                                              });
+               
+               
+               
+               function mousedown(man) {
+               circles.attr("fill", function(d) {
+                            return d.Manufacturer === man ? color(d.Manufacturer) : "#EEEEEE"
+                            })
+               largeNodeCircle.attr("fill", function(d) {
+                                    return d.Manufacturer === man ? color(d.Manufacturer) : "#EEEEEE"
+                                    })
+               
+               }
+               
+               function mouseup() {
+               
+               circles.attr("fill", function(d) {
+                            return color(d.Manufacturer)
+                            });
+               largeNodeCircle.attr("fill", function(d) {
+                                    return color(d.Manufacturer)
+                                    })
+               
+               }
+               
+               })
+            </script>
+        
+    </body>
+    
+    
+</html>

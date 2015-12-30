@@ -1,0 +1,24 @@
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.by import By
+import selenium
+import re
+from selenium import webdriver
+
+
+if __name__=='__main__':
+    driver = webdriver.Chrome()
+    driver.implicitly_wait(10)
+    driver.get("http://www.digikey.com/product-search/en?FV=fff40015%2Cfff8007f&k=Diodes&mnonly=0&newproducts=0&ColumnSort=0&page=1&stock=0&pbfree=0&rohs=0&quantity=&ptm=0&fid=0&pageSize=500")
+    page_number=driver.find_element_by_xpath("//span[@class='current-page']")
+    max_pages=int(re.search(re.compile("Page \d+/(\d+)"), page_number.text).group(1))
+
+
+
+    for a in range(1, max_pages+1):
+        driver.get("http://www.digikey.com/product-search/en?FV=fff40015%2Cfff8007f&k=Diodes&mnonly=0&newproducts=0&ColumnSort=0&page="+str(a)+"&stock=0&pbfree=0&rohs=0&quantity=&ptm=0&fid=0&pageSize=500")
+        element_found2=driver.find_element_by_xpath("//form[@class='download-table']/input")
+        element_found2.click()
+        time.sleep(3)

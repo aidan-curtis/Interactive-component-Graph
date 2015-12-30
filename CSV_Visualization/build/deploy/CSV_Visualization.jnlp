@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="CSV_Visualization.jnlp">
+  <information>
+    <title>CSV_Visualization</title>
+    <vendor>PowerAmerica</vendor>
+    <description>Sample JavaFX 2.0 application.</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="CSV_Visualization.jar" size="122846" download="eager" />
+    <jar href="libs/commons-codec-1.7-javadoc.jar" size="401748" download="eager" />
+    <jar href="libs/commons-codec-1.7-sources.jar" size="272575" download="eager" />
+    <jar href="libs/commons-codec-1.7-test-sources.jar" size="160075" download="eager" />
+    <jar href="libs/commons-codec-1.7-tests.jar" size="238351" download="eager" />
+    <jar href="libs/commons-codec-1.7.jar" size="259600" download="eager" />
+    <jar href="libs/commons-net-3.4-sources.jar" size="428593" download="eager" />
+    <jar href="libs/commons-net-3.4.jar" size="293736" download="eager" />
+    <jar href="libs/commons-net-examples-3.4.jar" size="77772" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="0" height="0" main-class="Main"  name="CSV" />
+  <update check="background"/>
+</jnlp>
